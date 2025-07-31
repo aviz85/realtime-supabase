@@ -27,17 +27,20 @@ export default function OnlinePresence({ user }: OnlinePresenceProps) {
     roomChannel
       .on('presence', { event: 'sync' }, () => {
         const presenceState = roomChannel.presenceState()
-        const users = Object.values(presenceState).flat().map((presence: any) => ({
-          id: presence.id,
-          username: presence.username,
-          online_at: presence.online_at,
-        }))
+        const users = Object.values(presenceState).flat().map((presence) => {
+          const p = presence as { id?: string; username?: string; online_at?: string }
+          return {
+            id: p.id || '',
+            username: p.username || '',
+            online_at: p.online_at || '',
+          }
+        }).filter(user => user.id && user.username)
         setOnlineUsers(users)
       })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      .on('presence', { event: 'join' }, ({ newPresences }) => {
         console.log('User joined:', newPresences)
       })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
         console.log('User left:', leftPresences)
       })
       .subscribe(async (status) => {
@@ -54,7 +57,7 @@ export default function OnlinePresence({ user }: OnlinePresenceProps) {
     return () => {
       roomChannel.unsubscribe()
     }
-  }, [user])
+  }, [user, supabase])
 
   return (
     <div className="bg-white rounded-lg shadow p-4">

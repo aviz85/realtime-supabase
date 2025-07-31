@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 
@@ -8,15 +8,15 @@ interface ModernExploreProps {
   user: User
 }
 
-export default function ModernExplore({ user }: ModernExploreProps) {
+export default function ModernExplore({ }: ModernExploreProps) {
   const [stats, setStats] = useState({
     totalPosts: 0,
     totalUsers: 0,
     todayPosts: 0,
     onlineUsers: 0,
   })
-  const [recentUsers, setRecentUsers] = useState<any[]>([])
-  const [trendingPosts, setTrendingPosts] = useState<any[]>([])
+  const [recentUsers, setRecentUsers] = useState<{ id: string; username: string; email: string; created_at: string; bio?: string }[]>([])
+  const [trendingPosts, setTrendingPosts] = useState<{ id: string; content: string; created_at: string; user_metadata: { username?: string }; email?: string }[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
@@ -24,7 +24,7 @@ export default function ModernExplore({ user }: ModernExploreProps) {
     loadStats()
     loadRecentUsers()
     loadTrendingPosts()
-  }, [])
+  }, [loadStats, loadRecentUsers, loadTrendingPosts])
 
   const loadStats = async () => {
     try {
@@ -125,7 +125,7 @@ export default function ModernExplore({ user }: ModernExploreProps) {
           <span>🔍</span>
           <span>Explore</span>
         </h1>
-        <p className="text-gray-600">Discover what's happening in your community</p>
+        <p className="text-gray-600">Discover what&apos;s happening in your community</p>
       </div>
 
       {/* Stats Grid */}
@@ -224,12 +224,12 @@ export default function ModernExplore({ user }: ModernExploreProps) {
                 <div className="flex items-start space-x-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-sm font-bold">
-                      {post.username?.charAt(0).toUpperCase()}
+                      {(post.user_metadata?.username || post.email)?.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-gray-900 text-sm">{post.username}</h3>
+                      <h3 className="font-semibold text-gray-900 text-sm">{post.user_metadata?.username || post.email}</h3>
                       <span className="text-xs text-gray-500">{getTimeAgo(post.created_at)}</span>
                     </div>
                     <p className="text-gray-700 text-sm line-clamp-2">{post.content}</p>

@@ -75,7 +75,7 @@ export default function RealtimeChat({ user }: RealtimeChatProps) {
     return () => {
       supabase.removeChannel(chatChannel)
     }
-  }, [user])
+  }, [user, supabase])
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()

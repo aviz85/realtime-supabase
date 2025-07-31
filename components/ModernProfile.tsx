@@ -20,7 +20,7 @@ interface ModernProfileProps {
 
 export default function ModernProfile({ user, onSignOut }: ModernProfileProps) {
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<{ id: string; content: string; created_at: string }[]>([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [editData, setEditData] = useState({

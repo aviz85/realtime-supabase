@@ -58,7 +58,7 @@ export default function RealtimeFeed({ user }: RealtimeFeedProps) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [supabase])
 
   const fetchPosts = async () => {
     try {

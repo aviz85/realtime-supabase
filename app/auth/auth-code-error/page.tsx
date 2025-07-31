@@ -24,7 +24,7 @@ export default function AuthCodeError() {
             Something went wrong
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8 transition-colors">
-            We couldn't verify your authentication. This could be due to an expired or invalid link.
+            We couldn&apos;t verify your authentication. This could be due to an expired or invalid link.
           </p>
           
           <Link

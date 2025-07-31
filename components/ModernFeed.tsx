@@ -51,7 +51,7 @@ export default function ModernFeed({ user }: ModernFeedProps) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [supabase])
 
   const fetchPosts = async () => {
     try {

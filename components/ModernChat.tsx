@@ -83,7 +83,10 @@ export default function ModernChat({ user }: ModernChatProps) {
     presenceChannel
       .on('presence', { event: 'sync' }, () => {
         const presenceState = presenceChannel.presenceState()
-        const users = Object.values(presenceState).flat().map((presence: any) => presence.username)
+        const users = Object.values(presenceState).flat().map((presence) => {
+          const p = presence as { username?: string }
+          return p.username || ''
+        }).filter(Boolean)
         setOnlineUsers(users)
       })
       .subscribe(async (status) => {
@@ -99,7 +102,7 @@ export default function ModernChat({ user }: ModernChatProps) {
       supabase.removeChannel(chatChannel)
       supabase.removeChannel(presenceChannel)
     }
-  }, [user])
+  }, [user, supabase, loadMessages])
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()

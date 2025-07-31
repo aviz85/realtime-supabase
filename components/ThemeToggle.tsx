@@ -3,7 +3,7 @@
 import { useTheme } from '@/lib/contexts/ThemeContext'
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme, isDark, mounted } = useTheme()
+  const { toggleTheme, isDark, mounted } = useTheme()
 
   // Don't render anything until mounted to prevent hydration mismatch
   if (!mounted) {
