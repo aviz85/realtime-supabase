@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 
@@ -34,7 +34,7 @@ export default function ModernChat({ user }: ModernChatProps) {
   }, [messages])
 
   // Load existing messages
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -52,7 +52,7 @@ export default function ModernChat({ user }: ModernChatProps) {
     } finally {
       setInitialLoading(false)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
     if (!user) return

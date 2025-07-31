@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 
@@ -20,6 +20,26 @@ export default function RealtimeFeed({ user }: RealtimeFeedProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (error) {
+        console.error('Error fetching posts:', error)
+      } else {
+        setPosts(data || [])
+      }
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [supabase])
 
   useEffect(() => {
     // Fetch initial posts
@@ -58,27 +78,7 @@ export default function RealtimeFeed({ user }: RealtimeFeedProps) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [supabase])
-
-  const fetchPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50)
-
-      if (error) {
-        console.error('Error fetching posts:', error)
-      } else {
-        setPosts(data || [])
-      }
-    } catch (error) {
-      console.error('Error fetching posts:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [supabase, fetchPosts])
 
   const handleDeletePost = async (postId: string) => {
     if (!user) return

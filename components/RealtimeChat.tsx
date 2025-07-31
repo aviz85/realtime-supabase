@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 
@@ -23,7 +23,7 @@ export default function RealtimeChat({ user }: RealtimeChatProps) {
   const supabase = createClient()
 
   // Load existing messages
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -41,7 +41,7 @@ export default function RealtimeChat({ user }: RealtimeChatProps) {
     } finally {
       setInitialLoading(false)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
     if (!user) return
@@ -75,7 +75,7 @@ export default function RealtimeChat({ user }: RealtimeChatProps) {
     return () => {
       supabase.removeChannel(chatChannel)
     }
-  }, [user, supabase])
+  }, [user, supabase, loadMessages])
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()

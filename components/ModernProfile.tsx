@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 
@@ -30,12 +30,7 @@ export default function ModernProfile({ user, onSignOut }: ModernProfileProps) {
   })
   const supabase = createClient()
 
-  useEffect(() => {
-    loadProfile()
-    loadUserPosts()
-  }, [user])
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -58,9 +53,9 @@ export default function ModernProfile({ user, onSignOut }: ModernProfileProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, user.id])
 
-  const loadUserPosts = async () => {
+  const loadUserPosts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('posts')
@@ -76,7 +71,12 @@ export default function ModernProfile({ user, onSignOut }: ModernProfileProps) {
     } catch (error) {
       console.error('Error loading posts:', error)
     }
-  }
+  }, [supabase, user.id])
+
+  useEffect(() => {
+    loadProfile()
+    loadUserPosts()
+  }, [user, loadProfile, loadUserPosts])
 
   const updateProfile = async (e: React.FormEvent) => {
     e.preventDefault()

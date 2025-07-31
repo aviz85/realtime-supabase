@@ -20,13 +20,7 @@ export default function ModernExplore({ }: ModernExploreProps) {
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
-  useEffect(() => {
-    loadStats()
-    loadRecentUsers()
-    loadTrendingPosts()
-  }, [loadStats, loadRecentUsers, loadTrendingPosts])
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       // Get total posts
       const { count: postsCount } = await supabase
@@ -55,9 +49,9 @@ export default function ModernExplore({ }: ModernExploreProps) {
     } catch (error) {
       console.error('Error loading stats:', error)
     }
-  }
+  }, [supabase])
 
-  const loadRecentUsers = async () => {
+  const loadRecentUsers = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -73,9 +67,9 @@ export default function ModernExplore({ }: ModernExploreProps) {
     } catch (error) {
       console.error('Error loading recent users:', error)
     }
-  }
+  }, [supabase])
 
-  const loadTrendingPosts = async () => {
+  const loadTrendingPosts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('posts')
@@ -93,7 +87,13 @@ export default function ModernExplore({ }: ModernExploreProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    loadStats()
+    loadRecentUsers()
+    loadTrendingPosts()
+  }, [loadStats, loadRecentUsers, loadTrendingPosts])
 
   const getTimeAgo = (timestamp: string) => {
     const now = new Date()
